@@ -1,0 +1,17 @@
+
+.signature{
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background: #2c2c2c; 
+    color:rgb(223, 223, 223);
+    font-size: 18px;
+    letter-spacing: 2px;
+    font-weight: 400;
+}
+.signature p{
+    margin-right: 2%;
+}
+.signature a{
+    color:rgb(223, 223, 223);
+}
