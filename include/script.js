@@ -365,7 +365,10 @@ function logoutUser(){
     $(document).on('click', '#logout', function(){
         $.ajax({
             url: "logout.php",
-            type: 'POST'
+            type: 'POST',
+            success: function(){
+                location.reload();
+            }
         });
     });
 }
@@ -384,13 +387,12 @@ function loginUser(){
             data: formData,
             type: 'POST',
             success: function(response){
-
                 if(response.success){
                     $(".message-box").show();
                     $(".message-box").append("Login successful!");
 
                     setTimeout(function(){
-                        $('#content-container').empty();
+                        location.reload();
                     }, 2000);
                 }
                 else{
@@ -407,7 +409,7 @@ function storeUser(){
         
         $(".message-box").empty();
         $(".error-highlight").removeClass("error-highlight");
-        
+
         let formData = $("#regForm").serialize();
 
         $.ajax({
@@ -450,19 +452,20 @@ function handleLinkClick(e){
     let page = $(this).attr('id');
     let url = "include/view/_" + page +".php";
 
+    $('#content-container').load(url);
+
     // Perform an AJAX request to fetch the content
-    $.ajax({
+    /*$.ajax({
         url: url,
         method: 'GET',
         success: function(data) {
         // Update the container with the fetched content
         $('#content-container').html(data);
 
-        /* Update the URL using the History API
-        history.pushState({}, '', page);
-        */
+        
         }
     });
+    */
 }
 
 

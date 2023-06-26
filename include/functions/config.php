@@ -72,11 +72,14 @@ function authorizeUser($username, $pwd){
     $row = $result->fetchArray(SQLITE3_ASSOC);
     $db->close();
 
+    if ($row === false) {
+        return false; 
+    }
+
     return password_verify($pwd, $row['Password']);
 }
 
-
-function existsInDatabase($type, $value) {
+function existsInDB($type, $value) {
     $db = DBConnect();
 
     if (empty($type)) {
