@@ -72,7 +72,7 @@ function authorizeUser($username, $pwd){
     $row = $result->fetchArray(SQLITE3_ASSOC);
     $db->close();
 
-    if ($row === false) {
+    if($row === false){
         return false; 
     }
 
@@ -149,14 +149,14 @@ function fetchUserId($username){
     return $row;
 }
 
-function fetchUserInfo(){
+function fetchUserInfo($userid){
 
     $db = DBConnect();
 
     $sql = "SELECT * FROM 'Users' WHERE Id = :id";
 
     $stmt = $db->prepare($sql);
-    $stmt->bindParam(':id', $_SESSION['userid'], SQLITE3_TEXT);
+    $stmt->bindParam(':id', $userid, SQLITE3_TEXT);
 
     $result = $stmt->execute();
     $row = $result->fetchArray(SQLITE3_ASSOC);
@@ -165,67 +165,6 @@ function fetchUserInfo(){
     return $row;
 }
 
-function storeThread($topic, $userid){
 
-    $db = DBConnect();
-
-    $sql = "INSERT INTO 'Threads' ('UserID', 'Topic') VALUES (:userid, :topic) ";
-
-    $stmt = $db->prepare($sql);
-    $stmt -> bindParam(':userid', $userid, SQLITE3_TEXT); 
-    $stmt -> bindParam(':topic', $topic, SQLITE3_TEXT);
-
-    if($stmt->execute()){
-        $db->close();
-        return true;
-    }
-    else{
-        $db->close();
-        return false;
-    }
-}
-
-function storePost($threadid, $userid, $title, $subject){
-
-    $db = DBConnect();
- 
-    $sql = "INSERT INTO 'Posts' ('ThreadID', 'AuthorID', 'Title', 'Subject') VALUES (:threadid, :userid, :title, :subject) ";
- 
-    $stmt = $db->prepare($sql);
-    $stmt -> bindParam(':threadid', $threadid, SQLITE3_TEXT);
-    $stmt -> bindParam(':userid', $userid, SQLITE3_TEXT); 
-    $stmt -> bindParam(':title', $title, SQLITE3_TEXT);
-    $stmt -> bindParam(':subject', $subject, SQLITE3_TEXT);
- 
-    if($stmt->execute()){
-       $db->close();
-       return true;
-    }
-    else{
-       $db->close();
-       return false;
-    }
-}
-
-function storeComment($postid, $userid, $comment){
-
-    $db = DBConnect();
- 
-    $sql = "INSERT INTO 'Comments' ('PostID', 'AuthorID', 'Comment') VALUES (:postid, :authorid, :comment) ";
- 
-    $stmt = $db->prepare($sql);
-    $stmt -> bindParam(':postid', $postid, SQLITE3_TEXT); 
-    $stmt -> bindParam(':authorid', $userid, SQLITE3_TEXT);
-    $stmt -> bindParam(':comment', $comment, SQLITE3_TEXT);
- 
-    if($stmt->execute()){
-       $db->close();
-       return true;
-    }
-    else{
-       $db->close();
-       return false;
-    }
-}
 
 ?>

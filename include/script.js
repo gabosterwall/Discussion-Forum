@@ -67,300 +67,22 @@ function hasLowercase(s){
 
 // Ajax and jquery from now on
 
-// This and the next functions got messy real quick, but I prevailed :)
-
-
-
-function loadComments(post_id){
-    $.post("fetch_comments.php", { postid : post_id },
-        function(response){
-
-            let $commentSection = $('.comment-section[id="' + post_id + '"]');
-            let $result = $commentSection.find('.output');
-
-            $result.empty();
-
-            response = JSON.parse(response);
-
-            if(response.length == 0){
-                $result.append('<p class="no-show">Be the first to comment!</p>');
-            }
-
-            response.forEach(element => {
-
-            let $commentContainer = $('<div class="comment-container"></div>');
-
-            let $comment = $('<h2 class="comment">' + element['Comment'] + '</h2>');
-
-            let $userProfile = $('<div class="comment-sender"></div>');
-            
-            if (element['Image'] == null || element['Image'] == '') {
-                $userProfile.append('<img src="img/default_user.png">');
-            }
-            else{
-                $userProfile.append('<img src="' + element['Image'] + '">');
-            }
-
-            $userProfile.append('<p>' + element['Username'] + " : " + element['CreatedDateTime'] + '</p>');
-
-            $userProfile.append('<button class="reply-btn">Reply</button>');
-
-            $commentContainer.append($userProfile);
-
-            $commentContainer.append($comment);
-            
-            $result.prepend($commentContainer);
+// Function to dynamically load the _profile html and then fill it with the users info
+function loadUserInfo(url){
+    $.ajax({
+        url: "profile.php",
+        type: 'POST',
+        success: function(data){
+            $('.main-page').load(url, function (){
+                $('.profile img').attr('src', data.Image || 'img/default.png');
+                $('.profile-box h2[name="Username"]').text(data.Username);
+                $('.profile-box h2[name="Email"]').text(data.Email);
             });
         }
-    )
-}
-
-function loadPosts(thread_id){
-    $.post("fetch_posts.php", { Id : thread_id },
-        function(response){
-            $('.post-container').empty();
-            $('.post-container').attr('id', thread_id);
-            response = JSON.parse(response);
-
-            if(response.length == 0){
-                $('.post-container').append('<p class="no-show">No posts available!</p>');
-            }
-
-            response.forEach(element => {
-        
-            let $postBox = $('<div class="post-box"></div>');
-
-            $postBox.append('<h2 id="thread-title">' + element['Title'] + '</h2>');
-
-            let $userProfile = $('<div class="user-profile"></div>');
-            
-            if (element['Image'] == null || element['Image'] == '') {
-                $userProfile.append('<img src="img/default_user.png">');
-            }
-            else{
-                $userProfile.append('<img src="' + element['Image'] + '">');
-            }
-
-            $userProfile.append('<p>' + element['Username'] + " posted on " + element['CreatedDateTime'] + '</p>');
-
-            $postBox.append($userProfile);
-
-            $postBox.append('<div id="thread-desc">' + element['Subject'] + '</div>');
-
-            $postBox.append('<button class="toggle-comments-btn">Comments</button>');
-            
-            // Comment section for each post: 
-
-            let $commentSection = $('<div class="comment-section" id="' + element['Id'] + '"> <h2>Comments:</h2> </div>');
-
-            let $commentDisplay = $('<div class="output">No comments published yet!</div>');
-
-            $commentSection.append($commentDisplay);
-
-            let $commentForm = $('<form class="comment-form" method="POST"></form>');
-
-            $commentSection.append($commentForm);
-
-            $commentForm.append('<div class="comment-error"></div>');
-            $commentForm.append('<textarea class="input-field" name="comment" id="comment" placeholder="Add a comment..."></textarea>');
-            $commentForm.append('<input type="submit" class="ajax-btn" id="comment-submit-btn" value="Submit"/>');
-            
-            $postBox.append($commentSection);
-            
-            $('.post-container').append($postBox);
-
-            loadComments(element['Id']);
-
-            $(".comment-section").hide();
-
-            });
-        }
-    )
-}
-
-function loadThreads(){
-    $.post("fetch_threads.php",
-        function(response){
-            $(".thread-container").empty();
-            response = JSON.parse(response);
-
-            if(response.length == 0){
-                $('.thread-container').append('<p class="no-show">No threads available!</p>');
-            }
-
-            response.forEach(element => {
-
-            let $threadBox = $('<div class="thread-box" id="' + element['Id'] + '"></div>');
-
-            $threadBox.append('<h2 id="thread-title">' + element['Topic'] + '</h2>');
-            
-            let $userProfile = $('<div class="user-profile"></div>');
-
-            if (element['Image'] == null || element['Image'] == '') {
-                $userProfile.append('<img src="img/default_user.png">');
-            } else {
-                $userProfile.append('<img src="' + element['Image'] + '">');
-            }
-
-            $userProfile.append('<p>' + element['Username'] + " posted on " + element['CreatedDateTime'] + '</p>');
-
-            $threadBox.append($userProfile);
-            
-            $(".thread-container").append($threadBox);
-
-            });
-        }
-    )
-}
-
-function storeThread(){
-    $("#submit-thread-btn").click(function (e) {
-        e.preventDefault();
-        
-        // better client-side validation, but commented out because server-side does the same but better
-
-        /*
-        let topic = $('#topic').val().trim();
-        if (topic === '') {
-            alert('Error: Topic missing.');
-            $('#topic').focus();
-            return;
-        }
-        */
-
-        $("#thread-error").empty();
-        let formData = $("#thread-form").serialize();
-        
-        $.ajax({
-            url: "store_thread.php",
-            data: formData,
-            type: 'POST',
-            success: function (response)
-            {
-                if(response == true){
-                    $("#topic").val("");
-                    loadThreads();
-                }
-                else{
-                    $("#thread-error").append(response);
-                }
-            }
-        });
     });
 }
 
-function storePost(){
-    $("#submit-post-btn").click(function (e) {
-        e.preventDefault();
-        $("#post-error").empty();
-
-        // better client-side validation, but commented out because server-side does the same but better
-
-        /*
-        let title = $('#title').val().trim();
-        let subject = $('#subject').val().trim();
-        if (title === '') {
-            alert('Error: Title missing.');
-            $('#title').focus();
-            return;
-        }
-        if (subject === '') {
-            alert('Error: Subject missing.');
-            $('#subject').focus();
-            return;
-        }
-        */
-
-        let formData = $("#post-form").serializeArray();
-
-        let thread_id = $('.post-container').attr('id');
-
-        formData.push({ name: 'Id', value: thread_id });
-
-        $.ajax({
-            url: "store_post.php",
-            data: $.param(formData),
-            type: 'POST',
-            success: function (response)
-            {
-                if(response == true){
-                    $("#title").val("");
-                    $("#subject").val("");
-                    loadPosts(thread_id);
-                }
-                else{
-                    $("#post-error").append(response);
-                }
-            }
-        });
-    });
-}
-
-function storeComment(){
-    $(document).on('click', '.ajax-btn', function(e) {
-        e.preventDefault();
-        let commentForm = $(this).closest('form');
-        let formData = commentForm.serializeArray();
-        let post_id = commentForm.closest('.comment-section').attr('id');
-    
-        let $commentSection = $('.comment-section[id="' + post_id + '"]');
-        let $error = $commentSection.find(".comment-error");
-        $error.empty();
-        let $comment = $commentSection.find("#comment");
-
-        formData.push({ name: 'postid', value: post_id });
-
-        $.ajax({
-            url: "store_comment.php",
-            data: $.param(formData),
-            type: 'POST',
-            success: function (response)
-            {
-                if(response == true){
-                    $comment.val("");
-                    loadComments(post_id);
-                }
-                else{
-                    $error.append(response);
-                }
-            }
-        });
-    });
-}
-
-/*function storeReply(){
-    $(document).on('click', '.ajax-btn', function(e) {
-        e.preventDefault();
-        let replyForm = $(this).closest('form');
-        let formData = replyForm.serializeArray();
-        let comment_id = replyForm.closest('.comment-section').attr('id');
-    
-        let $replyForm = $('.reply-form[id="' + comment_id + '"]');
-        let $error = $replyForm.find(".reply-error");
-        $error.empty();
-        let $reply = $replyForm.find("#reply");
-
-        formData.push({ name: 'commentid', value: post_id });
-
-        $.ajax({
-            url: "store_comment.php",
-            data: $.param(formData),
-            type: 'POST',
-            success: function (response)
-            {
-                if(response == true){
-                    $comment.val("");
-                    loadComments(post_id);
-                }
-                else{
-                    $error.append(response);
-                }
-            }
-        });
-    });
-}
-*/
-
+// Function to handle user logging out
 function logoutUser(){
     $(document).on('click', '#logout', function(){
         $.ajax({
@@ -373,6 +95,7 @@ function logoutUser(){
     });
 }
 
+// Function to handle login of user
 function loginUser(){
     $(document).on('click', '#login-button', function(e){
         e.preventDefault();
@@ -403,6 +126,7 @@ function loginUser(){
     });
 }
 
+// Function to dynamically store the user input on registration when data is valid
 function storeUser(){
     $(document).on('click', '#register-button', function(e){
         e.preventDefault();
@@ -423,8 +147,8 @@ function storeUser(){
                     $(".message-box").append("Registration successful!");
 
                     setTimeout(function(){
-                        $('#content-container').load('include/view/_login.php');
-                    }, 3000);
+                        $('#user-popup').load('include/view/_login.php');
+                    }, 2000);
                 }
                 else{
                     handleUserInputErrors(response.errors);
@@ -434,6 +158,7 @@ function storeUser(){
     });
 }
 
+// Function to handle error messages related to user input on popup form
 function handleUserInputErrors(errors){
     for (let field in errors) {
         let errorMessage = errors[field];
@@ -446,26 +171,42 @@ function handleUserInputErrors(errors){
     }
 }
 
+// Function to handle links on the navbar
 function handleLinkClick(e){
     e.preventDefault(); // Prevent default link behavior
 
     let page = $(this).attr('id');
     let url = "include/view/_" + page +".php";
 
-    $('#content-container').load(url);
+    switch(page){
+        case "login":
+            $('#user-popup').load(url);
+            break;
+        case "register": 
+            $('#user-popup').load(url);
+            break;
+        case "profile":
+            loadUserInfo(url);
+            break;
+        default:
+            break;
+    }
+
+    //$('#content-container').load(url);
 
     // Perform an AJAX request to fetch the content
     /*$.ajax({
         url: url,
-        method: 'GET',
+        method: 'POST',
         success: function(data) {
         // Update the container with the fetched content
-        $('#content-container').html(data);
+        $('#user-popup').html(data);
 
         
         }
     });
     */
+    
 }
 
 
@@ -477,13 +218,7 @@ $(document).ready(function(){
 
     // Close button functionality
     $(document).on('click', '.close-button', function(){
-        $('#content-container').empty();
-        /*
-        $('#content-container').fadeOut(100, function() {
-        $(this).empty(); // Clear the content after fading out
-        $(this).show(); // Show the container again
-        });
-        */
+        $('#user-popup').empty();
     });
 
     storeUser();
@@ -492,36 +227,5 @@ $(document).ready(function(){
 
     logoutUser();
 
-    /*storeThread();
-    
-    loadThreads();
-
-    storePost();
-
-    storeComment();
-
-    $(document).on('click', '#toggle-form', function() {
-        $(".hidden-form").toggle();
-    });
-
-    $('.thread-container').on('click', '.thread-box', function() {
-        let thread_id = $(this).attr('id');
-        $('#main-threads').hide();
-        $('#main-posts').show();
-        loadPosts(thread_id);
-    });
-
-    $(document).on('click', '#unload-btn', function() {
-        $("#main-posts").hide();
-        $('#main-threads').show();
-    });
-
-    $(document).on('click', '.toggle-comments-btn', function() {
-        
-        $(this).closest('.post-box').find('.comment-section').toggle();
-       
-    });
-
-    */
 
 });

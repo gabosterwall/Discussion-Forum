@@ -1,0 +1,150 @@
+.profile{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background: #4b4b4b;
+    box-shadow: 5px 5px 18px 0 rgb(13, 13, 13);
+    text-align: left;
+    border-radius: 5px;
+    padding: 20px;
+    gap: 2em;
+    width: 30%;
+    height: 100%;
+}
+
+.profile img{
+    height: 10em;
+    width: 10em;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 5px 5px 18px 0 rgb(13, 13, 13);
+}
+
+.profile h2{
+    background: rgb(167, 167, 167);
+    color: rgb(17, 17, 17);
+    border-radius: 5px;
+    margin-top: 5px;
+    padding: 10px 12px;
+    font-size: 18px;
+    font-weight: 400;
+    border: none;
+    outline: none;
+    box-shadow: 5px 5px 18px 0 rgb(13, 13, 13);
+}
+
+.profile label{
+    font-size: 18px;
+    font-weight: 600;
+    color:rgb(223, 223, 223);
+}
+
+.profile-display{
+    width: 100%;
+    text-align: left;
+    font-size: 18px;
+    color: rgb(21, 21, 21);
+}
+
+.profile button{
+    padding: 10px 50px;
+    color: rgb(223, 223, 223);
+    background: #01575a;
+    font-size: 20px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    transition: all .4s ease;
+    cursor: pointer;
+    box-shadow: 5px 5px 18px 0 rgb(13, 13, 13);
+}
+
+.profile button:hover{
+    background: #00767a;
+}
+
+
+.profile-form{
+    display: flex;
+    place-items: center;
+    flex-direction: column;
+    gap: 12px;
+    background:  #4d4d4d;
+    box-shadow: 5px 10px 15px 0 rgba(25, 26, 27, 0.727);
+    text-align: center;
+    border-radius: 8px;
+    padding: 20px;
+    width: 50%;
+    border: none;
+    box-shadow: 5px 5px 18px 0 rgb(13, 13, 13);
+}
+
+.edit-btns{
+    width: 50%;
+    padding: 10px 50px;
+    color: rgb(223, 223, 223);
+    background: #008062;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    transition: all .2s ease;
+    cursor: pointer;
+    box-shadow: 5px 5px 18px 0 rgb(13, 13, 13);
+}
+.edit-btns:hover{
+    background: #004837;
+}
+
+.profile-form img{
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    box-shadow: 5px 5px 18px 0 rgb(13, 13, 13);
+}
+
+.edit-container{
+    display: flex;
+    gap: 20px;
+}
+
+.edit-boxes{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+
+.edit-boxes label{
+    text-align: left;
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: rgb(223, 223, 223);
+}
+.edit-boxes input{
+    width: 100%;
+    background: rgb(167, 167, 167);
+    color: rgb(17, 17, 17);
+    border-radius: 5px;
+    padding: 12px 14px;
+    font-size: 18px;
+    margin-top: 5px;
+    border: none;
+    outline: none;
+}
+
+.edit-error{
+    width: 100%;
+}
+.edit-error p{
+    color: rgb(17, 17, 17);
+    background: rgb(214, 8, 8);
+    padding: 15px 10px;
+    border-radius: 5px;
+    box-shadow: 5px 10px 15px 0 rgba(25, 26, 27, 0.727);
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+}
