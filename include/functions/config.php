@@ -79,7 +79,8 @@ function authorizeUser($username, $pwd){
     return password_verify($pwd, $row['Password']);
 }
 
-function existsInDB($type, $value) {
+function existsInDB($type, $value){
+
     $db = DBConnect();
 
     if (empty($type)) {
@@ -101,11 +102,9 @@ function existsInDB($type, $value) {
     return $row['exists_value'] == 1;
 }
 
-function updateDatabase_User($type, $newvalue, $userid) {
-    $db = new SQLite3("./db/database.db");
-    if(!$db) {
-       die("Failed to connect to database");
-    }
+function updateDatabase_User($type, $newvalue, $userid){
+
+    $db = DBConnect();
 
     if(empty($type)){
         $db->close();
