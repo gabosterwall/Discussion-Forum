@@ -2,16 +2,34 @@
 
     <img src="" alt="">
 
-    <div class="profile-box">
+    <div class="message-box"></div>
 
-        <label for="Username">Username:</label>
-        <h2 name="Username"></h2>
+    <form class="profile-container" id="profForm">
 
-        <label for="Email">Email:</label>
-        <h2 name="Email"></h2>
-        
-    </div>
+        <div class="profile-box">
+            <label for="new_username">Username: </label>
+            <input type="text" name="new_username" spellcheck="false">
+
+            <label for="new_email">Email: </label>
+            <input type="email" name="new_email" spellcheck="false">
+
+            <label for="new_img">Upload image: </label>
+            <input type="file" name="new_img" accept="image/jpeg, image/jpg, image/png">
+        </div>
+
+        <div class="profile-box">
+            <label for="password">Old password: </label>
+            <input type="password" name="password" placeholder="(Required)" spellcheck="false" required>
+
+            <label for="cpassword">Confirm password: </label>
+            <input type="password" name="cpassword" placeholder="(Required)" spellcheck="false" required>
+
+            <label for="new_password">New password: </label>
+            <input type="password" name="new_password" placeholder="" spellcheck="false">
+        </div>
+
+    </form>
     
-    <button>Edit Profile</button>
+    <button id="update-button" class="ajax-link">Update</button>
 
 </div>

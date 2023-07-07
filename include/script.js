@@ -67,17 +67,44 @@ function hasLowercase(s){
 
 // Ajax and jquery from now on
 
+
+
+
+function updateUserInfo(){
+    $('.main-page').on('click', '#update-button', function(e){
+        e.preventDefault();
+        
+        $(".message-box").empty();
+        $(".error-highlight").removeClass("error-highlight");
+
+        let formData = $("#profForm").serialize();
+
+        $.ajax({
+            url: "updateUserInfo.php",
+            data: formData,
+            type: 'POST',
+            success: function(response){
+                if(response.success){
+                    $(".message-box").show();
+                    $(".message-box").append("Information successfully updated!");
+                }
+                else{
+                    handleUserInputErrors(response.errors);
+                }
+            }
+        });
+    });
+}
+
 // Function to dynamically load the _profile html and then fill it with the users info
-function loadUserInfo(url){
+function loadProfileInfo(){
     $.ajax({
-        url: "profile.php",
+        url: "fetchUserInfo.php",
         type: 'POST',
         success: function(data){
-            $('.main-page').load(url, function (){
-                $('.profile img').attr('src', data.Image || 'img/default.png');
-                $('.profile-box h2[name="Username"]').text(data.Username);
-                $('.profile-box h2[name="Email"]').text(data.Email);
-            });
+            $('.profile img').attr('src', data.Image || 'img/default.png');
+            $('.profile-box input[name="new_username"]').attr("placeholder", data.Username);
+            $('.profile-box input[name="new_email"]').attr("placeholder", data.Email);
         }
     });
 }
@@ -186,7 +213,10 @@ function handleLinkClick(e){
             $('#user-popup').load(url);
             break;
         case "profile":
-            loadUserInfo(url);
+            $('.main-page').load(url,function() {
+                loadProfileInfo();
+                updateUserInfo();
+            });
             break;
         default:
             break;
@@ -208,7 +238,6 @@ function handleLinkClick(e){
     */
     
 }
-
 
 $(document).ready(function(){
     
