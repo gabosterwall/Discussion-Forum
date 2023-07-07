@@ -77,12 +77,16 @@ function updateUserInfo(){
         $(".message-box").empty();
         $(".error-highlight").removeClass("error-highlight");
 
-        let formData = $("#profForm").serialize();
+        //let formData = $("#profForm").serialize();
+
+        let formData = new FormData($("#profForm")[0]);
 
         $.ajax({
             url: "updateUserInfo.php",
             data: formData,
             type: 'POST',
+            processData: false,
+            contentType: false,
             success: function(response){
                 if(response.success){
                     $(".message-box").show();

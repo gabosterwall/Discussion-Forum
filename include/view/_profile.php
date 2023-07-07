@@ -4,7 +4,7 @@
 
     <div class="message-box"></div>
 
-    <form class="profile-container" id="profForm">
+    <form class="profile-container" id="profForm" enctype="multipart/form-data">
 
         <div class="profile-box">
             <label for="new_username">Username: </label>
