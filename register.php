@@ -14,6 +14,9 @@ if (empty($_POST['username']) || empty($_POST['email']) || empty($_POST['passwor
 }
 else{
 
+    if(existsInDB("Username", $_POST['username'])){
+        $errors['username'] = "Username is taken. ";
+    }
     if(!validateUsername($_POST['username'])){
         $errors['username'] = "Username length must be greater than 3. ";
     }

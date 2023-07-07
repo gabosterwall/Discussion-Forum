@@ -6,8 +6,17 @@ session_start();
 
 $errors = array();
 
-if(isset($_POST['username']) && isset($_POST['password'])){
+$type = "Username";
 
+if (empty($_POST['username']) || empty($_POST['password'])){
+
+    $errors['general'] = "All fields must be filled. ";
+    header('Content-Type: application/json');
+    echo json_encode(array('success' => false, 'errors' => $errors));
+    exit;
+}
+else{
+    
     if(!validateUsername($_POST['username'])){
         $errors['username'] = "Username length must be greater than 3. ";
     }
@@ -16,14 +25,14 @@ if(isset($_POST['username']) && isset($_POST['password'])){
         $errors['password'] = "Password length must be greater than 8, contain at least one uppercase and one lowercase character. ";
     }
     
-    if (!empty($errors)){
+    if(!empty($errors)){
         header('Content-Type: application/json');
         echo json_encode(array('success' => false, 'errors' => $errors));
         exit;
     }
 
     if(!authorizeUser($_POST['username'], $_POST['password'])){
-        $errors['loginForm'] = "Login process failed. ";
+        $errors['wrongpwd'] = "Wrong username and/or password. ";
         header('Content-Type: application/json');
         echo json_encode(array('success' => false, 'errors' => $errors));
         exit;
@@ -35,12 +44,6 @@ if(isset($_POST['username']) && isset($_POST['password'])){
 
     header('Content-Type: application/json');
     echo json_encode(array('success' => true));
-    exit;
-}
-else{
-    $errors['loginForm'] = "All fields must be filled. ";
-    header('Content-Type: application/json');
-    echo json_encode(array('success' => false, 'errors' => $errors));
     exit;
 }
 
