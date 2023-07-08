@@ -69,7 +69,7 @@ function hasLowercase(s){
 
 
 
-
+// Function to update the users information in the database -- NEED FURTHER WORK TO DYNAMICALLY UPDATE THE INFORMATION DISPLAYED
 function updateUserInfo(){
     $('.main-page').on('click', '#update-button', function(e){
         e.preventDefault();
@@ -146,7 +146,7 @@ function loginUser(){
                     $(".message-box").append("Login successful!");
 
                     setTimeout(function(){
-                        location.reload();
+                        location.reload();  // In order to "update" the navbar page had to reload because it relies on a session-variable
                     }, 2000);
                 }
                 else{
@@ -178,7 +178,7 @@ function storeUser(){
                     $(".message-box").append("Registration successful!");
 
                     setTimeout(function(){
-                        $('#user-popup').load('include/view/_login.php');
+                        $('#user-popup').load('include/view/_login.php'); //When successfull it loads the login popup
                     }, 2000);
                 }
                 else{
@@ -189,7 +189,7 @@ function storeUser(){
     });
 }
 
-// Function to handle error messages related to user input on popup form
+// Function to handle error messages related to user input on input forms
 function handleUserInputErrors(errors){
     for (let field in errors) {
         let errorMessage = errors[field];
@@ -202,7 +202,7 @@ function handleUserInputErrors(errors){
     }
 }
 
-// Function to handle links on the navbar
+// Function to handle links on the navbar; switched to switch statements to handle each link separately
 function handleLinkClick(e){
     e.preventDefault(); // Prevent default link behavior
 
@@ -247,6 +247,7 @@ $(document).ready(function(){
     
     // jQuery methods go here...
 
+    // Navbar link functionality
     $('.ajax-link').on('click', handleLinkClick);
 
     // Close button functionality
