@@ -1,4 +1,4 @@
-/* Profile section */
+
 .profile{
     display: flex;
     align-items: center;
@@ -60,5 +60,3 @@
 .profile button:hover{
     background: #00767a;
 }
-
-/* Edit profile section */
