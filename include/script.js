@@ -67,11 +67,8 @@ function hasLowercase(s){
 
 // Ajax and jquery from now on
 
-
-
-// Function to update the users information in the database -- NEED FURTHER WORK TO DYNAMICALLY UPDATE THE INFORMATION DISPLAYED
 function updateUserInfo(){
-    $('.main-page').on('click', '#update-button', function(e){
+    $(document).on('click', '#update-button', function(e){
         e.preventDefault();
         
         $(".message-box").empty();
@@ -91,6 +88,9 @@ function updateUserInfo(){
                 if(response.success){
                     $(".message-box").show();
                     $(".message-box").append("Information successfully updated!");
+                    $('.message-box').fadeIn().delay(1000).fadeOut(200);
+                    $('#password').val('');
+                    $('#cpassword').val('');
                 }
                 else{
                     handleUserInputErrors(response.errors);
@@ -178,7 +178,7 @@ function storeUser(){
                     $(".message-box").append("Registration successful!");
 
                     setTimeout(function(){
-                        $('#user-popup').load('include/view/_login.php'); //When successfull it loads the login popup
+                        $('#user-popup').load('include/models/_login.php'); //When successfull it loads the login popup
                     }, 2000);
                 }
                 else{
@@ -198,8 +198,257 @@ function handleUserInputErrors(errors){
         inputField.addClass('error-highlight');
         $(".message-box").show();
         
-        $('.message-box').append('<p class="error-message">' + errorMessage + '</p>');
+        //$('.message-box').append('<p class="error-message">' + errorMessage + '</p>');
+        $(".message-box").append('<p class="error-message">' + errorMessage + '</p>').fadeIn().delay(1000).fadeOut(200);
     }
+}
+
+
+
+function loadComments(post_id){
+    $.post("fetch_comments.php", { Id : post_id },
+        function(response){
+
+            let $commentSection = $('.comment-section[id="' + post_id + '"]');
+            let $result = $commentSection.find('.output');
+
+            $result.empty();
+
+            response = JSON.parse(response);
+
+            if(response.length == 0){
+                $result.append('<p class="no-show">Be the first to comment!</p>');
+            }
+
+            response.forEach(element => {
+
+            let $commentContainer = $('<div class="comment-container"></div>');
+
+            let $comment = $('<h2 class="comment">' + element['Comment'] + '</h2>');
+
+            let $userProfile = $('<div class="comment-sender"></div>');
+            
+            if (element['Image'] == null || element['Image'] == '') {
+                $userProfile.append('<img src="img/default_user.png">');
+            }
+            else{
+                $userProfile.append('<img src="' + element['Image'] + '">');
+            }
+
+            $userProfile.append('<p>' + element['Username'] + " : " + element['CreatedDateTime'] + '</p>');
+
+            $commentContainer.append($userProfile);
+
+            $commentContainer.append($comment);
+            
+            $result.prepend($commentContainer);
+            });
+        }
+    )
+}
+
+function storeComment() {
+    $(document).on('click', '#comment-submit-button', function(e){
+        e.preventDefault();
+
+        $(".message-box").empty();
+        $(".error-highlight").removeClass("error-highlight");
+
+        let $commentForm = $(this).closest('.comment-form');
+        let formData = $commentForm.serializeArray();
+        let post_id = $commentForm.closest('.comment-section').attr('id');
+        formData.push({ name: 'Id', value: post_id });
+
+        $.ajax({
+        url: "store_comment.php",
+        data: $.param(formData),
+        type: 'POST',
+        success: function(response){
+            
+            if (response.success) {
+                $(".message-box").text("Comment successfully published!").fadeIn().delay(1000).fadeOut(200, function(){
+                    loadComments(post_id);
+                });
+            }else{
+                handleUserInputErrors(response.errors);
+            }
+        }
+        });
+    });
+}
+
+// Function to load posts with information from database
+function loadPosts(thread_id){
+    $.post("fetch_posts.php", { Id : thread_id },
+        function(response){
+            $('.post-container').empty();
+            $('.post-container').attr('id', thread_id);
+            response = JSON.parse(response);
+
+            if(response.length == 0){
+                $('.post-container').append('<p class="no-show">No posts available!</p>');
+            }
+
+            response.forEach(element => {
+        
+            // Individual posts gets created 
+            let $postBox = $('<div class="post-box"></div>');
+            $postBox.append('<h2>' + element['Title'] + '</h2>');
+            $postBox.append('<h1 >' + element['Description'] + '</h1>');
+            let $userProfile = $('<div class="user-profile"></div>');
+            if (element['Image'] == null || element['Image'] == '') {
+                $userProfile.append('<img src="img/default_user.png">');
+            }
+            else{
+                $userProfile.append('<img src="' + element['Image'] + '">');
+            }
+            $userProfile.append('<p>' + element['Username'] + " posted on " + element['CreatedDateTime'] + '</p>');
+            $postBox.append($userProfile);
+            
+            let $toggleComments = $('<button class="toggle-comments-btn">Comments</button>');
+            $postBox.append($toggleComments);
+            //$postBox.append('<button class="toggle-comments-button">Comments</button>');
+            
+            // Individual comment sections gets created for each post: 
+            let $commentSection = $('<div class="comment-section" id="' + element['Id'] + '"> <h2>Comments:</h2> </div>');
+            let $commentDisplay = $('<div class="output">No comments published yet!</div>');
+            $commentSection.append($commentDisplay);
+            let $commentForm = $('<form class="comment-form" method="POST"></form>');
+            $commentSection.append($commentForm);
+            $commentSection.append($commentForm);
+            $commentForm.append('<textarea class="input-field" name="comment" id="comment" placeholder="Add a comment..."></textarea>');
+            $commentForm.append('<input type="submit" class="ajax-btn" id="comment-submit-button" value="Submit"/>');
+            $postBox.append($commentSection);
+            $('.post-container').append($postBox);
+            
+            $commentSection.hide();
+            $toggleComments.on('click', function(){
+                $commentSection.toggle();
+            })
+            
+            $(document).ready(function(){
+                loadComments(element['Id']);
+            })
+
+            });
+        }
+    )
+}
+
+// Function to store posts in database
+function storePost(){
+    $(document).on('click', "#submit-post-button", function(e){
+        e.preventDefault();
+
+        $(".message-box").empty();
+        $(".error-highlight").removeClass("error-highlight");
+
+        let formData = $("#postForm").serializeArray();
+        let thread_id = $('.post-container').attr('id');
+
+        formData.push({ name: 'Id', value: thread_id });
+        $.ajax({
+            url: "store_post.php",
+            data: $.param(formData),
+            type: 'POST',
+            success: function (response)
+            {
+                if(response.success){
+                    setTimeout(function(){
+                        $('#title').val('');
+                        $('#description').val('');
+                        $(".message-box").show();
+                        $(".message-box").append("Post submission successful!");
+                    }, 2000);
+                    loadPosts(thread_id);
+                }
+                else{
+                    handleUserInputErrors(response.errors);
+                }
+            }
+        });
+    });
+}
+
+function handlePosts() {
+    $(document).on('click','.thread-box', function(){
+        let thread_id = $(this).attr('id');
+        $('.main-page').load('include/models/_posts.php', function(){
+            loadPosts(thread_id);
+            let form = $(this).find('#postForm').hide();
+            let toggleForm = $(this).find('#toggle-posts');
+            form.hide();
+            toggleForm.on('click', function() {
+                form.toggle();
+            });
+        });
+    });
+}
+
+// Function to ajax load threads from database
+function loadThreads(){
+    $.post("fetch_threads.php",
+        function(response){
+            $(".thread-container").empty();
+
+            response = JSON.parse(response);
+
+            if(response.length === 0){
+                $(".thread-container").append('No threads available!');
+            }
+
+            response.forEach(element => {
+                let $threadBox = $('<div class="thread-box" id="' + element['Id'] + '"></div>');
+                $threadBox.append('<h2 id="thread-title">' + element['Topic'] + '</h2>');
+                let $userProfile = $('<div class="user-profile"></div>');
+                $userProfile.append('<p> Created by: ' + element['Username'] + '</p>');
+                $threadBox.append($userProfile);
+                $(".thread-container").append($threadBox);
+            });
+        }
+    )
+}
+
+// function to ajax store new threads in database + load them on page
+function storeThread(){
+    $(document).on('click','#submit-thread-button', function(e){
+        e.preventDefault();
+
+        $(".message-box").empty();
+        $(".error-highlight").removeClass("error-highlight");
+
+        let formData = $("#threadForm").serialize();
+        
+        $.ajax({
+            url: "store_thread.php",
+            data: formData,
+            type: 'POST',
+            success: function (response)
+            {
+                if(response.success){
+                    $(".message-box").text("Thread submission successful!").fadeIn().delay(1000).fadeOut(200, function() {
+                        loadThreads();
+                    });
+                }
+                else{
+                    handleUserInputErrors(response.errors);
+                }
+            }
+        });
+    });
+    
+}
+
+function handleThreads(url) {
+    $('.main-page').load(url, function() {
+        loadThreads();
+        let form = $('.threads').find('#threadForm');
+        let toggleForm = $('.threads').find('#toggle-threads');
+        form.hide();
+        toggleForm.on('click', function() {
+            form.toggle();
+        });
+    });
 }
 
 // Function to handle links on the navbar; switched to switch statements to handle each link separately
@@ -207,7 +456,7 @@ function handleLinkClick(e){
     e.preventDefault(); // Prevent default link behavior
 
     let page = $(this).attr('id');
-    let url = "include/view/_" + page +".php";
+    let url = "include/models/_" + page +".php";
 
     switch(page){
         case "login":
@@ -217,30 +466,17 @@ function handleLinkClick(e){
             $('#user-popup').load(url);
             break;
         case "profile":
-            $('.main-page').load(url,function() {
+            $('.main-page').load(url,function(){
                 loadProfileInfo();
                 updateUserInfo();
             });
             break;
+        case "threads":
+            handleThreads(url);
+        break;
         default:
             break;
     }
-
-    //$('#content-container').load(url);
-
-    // Perform an AJAX request to fetch the content
-    /*$.ajax({
-        url: url,
-        method: 'POST',
-        success: function(data) {
-        // Update the container with the fetched content
-        $('#user-popup').html(data);
-
-        
-        }
-    });
-    */
-    
 }
 
 $(document).ready(function(){
@@ -255,11 +491,30 @@ $(document).ready(function(){
         $('#user-popup').empty();
     });
 
+    // Exit post section functionality
+    $(document).on('click', '#exit-posts', function(){
+        $('.main-page').load('include/models/_threads.php', function() {
+            loadThreads();
+            let form = $('.threads').find('#threadForm');
+            let toggleForm = $('.threads').find('#toggle-threads');
+            form.hide();
+            toggleForm.on('click', function() {
+                form.toggle();
+            });
+        });
+    })
+
     storeUser();
 
     loginUser();
 
     logoutUser();
 
+    storeThread();
 
+    storePost();
+
+    storeComment();
+    
+    handlePosts();
 });

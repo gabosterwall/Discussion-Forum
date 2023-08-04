@@ -6,17 +6,20 @@
         <div class="nav-items">
             <a href="index.php">Home</a>
             <a href="#contact-content">Contact</a>
-            <button id="register" class="ajax-link">Sign Up</button>
-            <button id="login" class="ajax-link">Login</button>
+        </div>
+    <?php endif ?>
+
+    <?php if(!isset($_SESSION['userid'])): ?>
+        <div class="nav-items">
+            <a id="login" class="ajax-link">Sign in</a>
+            <button id="register" class="ajax-link">Sign up</button>
         </div>
     <?php endif ?>
 
     <?php if(isset($_SESSION['userid'])): ?>
 
         <div class="nav-items">
-            <?php if(isset($_SESSION['userid'])): ?>
-                <a id="posts" class="ajax-link">Posts</a>
-            <?php endif ?>
+            <a id="threads" class="ajax-link">Threads</a>
             <a href="index.php">Home</a>
             <a href="#contact-content">Contact</a>
         </div>

@@ -1,8 +1,8 @@
 <div class="profile">
-
+    
     <img src="" alt="">
 
-    <div class="message-box"></div>
+    <div id='profile-message-box' class="message-box"></div>
 
     <form class="profile-container" id="profForm" enctype="multipart/form-data">
 
@@ -19,10 +19,10 @@
 
         <div class="profile-box">
             <label for="password">Old password: </label>
-            <input type="password" name="password" placeholder="(Required)" spellcheck="false" required>
+            <input type="password" name="password" id='password' placeholder="(Required)" spellcheck="false" required>
 
             <label for="cpassword">Confirm password: </label>
-            <input type="password" name="cpassword" placeholder="(Required)" spellcheck="false" required>
+            <input type="password" name="cpassword" id='cpassword' placeholder="(Required)" spellcheck="false" required>
 
             <label for="new_password">New password: </label>
             <input type="password" name="new_password" placeholder="" spellcheck="false">
