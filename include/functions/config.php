@@ -38,24 +38,85 @@ function verifyAndConfirmPasswords($password, $cpassword, $oldpassword){
 
 
 // Query functions
+
+function storeComment($postid, $userid, $comment){
+    $db = DBConnect();
+
+    $sql = "INSERT INTO 'Comments' ('PostID', 'AuthorID', 'Comment') VALUES (:postid, :authorid, :comment) ";
+
+    $stmt = $db->prepare($sql);
+    $stmt -> bindParam(':postid', $postid, SQLITE3_TEXT); 
+    $stmt -> bindParam(':authorid', $userid, SQLITE3_TEXT);
+    $stmt -> bindParam(':comment', $comment, SQLITE3_TEXT);
+
+    if($stmt->execute()){
+        $db->close();
+        return true;
+    }
+    else{
+        $db->close();
+        return false;
+    }
+}
+
+function storePost($threadid, $userid, $title, $description){
+    $db = DBConnect();
+
+    $sql = "INSERT INTO 'Posts' ('ThreadID', 'AuthorID', 'Title', 'Description') VALUES (:threadid, :userid, :title, :description) ";
+
+    $stmt = $db->prepare($sql);
+    $stmt -> bindParam(':threadid', $threadid, SQLITE3_TEXT);
+    $stmt -> bindParam(':userid', $userid, SQLITE3_TEXT); 
+    $stmt -> bindParam(':title', $title, SQLITE3_TEXT);
+    $stmt -> bindParam(':description', $description, SQLITE3_TEXT);
+
+    if($stmt->execute()){
+        $db->close();
+        return true;
+    }
+    else{
+        $db->close();
+        return false;
+    }
+}
+
+function storeThread($topic, $userid){
+    $db = DBConnect();
+
+    $sql = "INSERT INTO 'Threads' ('UserID', 'Topic') VALUES (:userid, :topic) ";
+
+    $stmt = $db->prepare($sql);
+    $stmt -> bindParam(':userid', $userid, SQLITE3_TEXT); 
+    $stmt -> bindParam(':topic', $topic, SQLITE3_TEXT);
+
+    if($stmt->execute()){
+        $db->close();
+        return true;
+    }
+    else{
+        $db->close();
+        return false;
+    }
+}
+
 function storeUser($username, $email, $hash){
 
     $db = DBConnect();
- 
+
     $sql = "INSERT INTO 'Users' ('Username', 'Email', 'Password') VALUES (:username, :email, :pwd) ";
- 
+
     $stmt = $db->prepare($sql);
     $stmt -> bindParam(':username', $username, SQLITE3_TEXT); 
     $stmt -> bindParam(':email', $email, SQLITE3_TEXT);
     $stmt -> bindParam(':pwd', $hash, SQLITE3_TEXT);
- 
+
     if($stmt->execute()){
-       $db->close();
-       return true;
+        $db->close();
+        return true;
     }
     else{
-       $db->close();
-       return false;
+        $db->close();
+        return false;
     }
 }
 
